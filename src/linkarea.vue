@@ -1,122 +1,137 @@
 <template>
-  <div class="picker-area" @blur="hideList" tabindex="0">
+  <div class="picker-area"
+       @blur="hideList"
+       tabindex="0">
     <div class="picker-show">
-      <span :class="['picker-province', chooseIndex == 0?'pressActive':'']" @click="selectClick(0)">{{province}}</span>
+      <span :class="['picker-province', chooseIndex == 0?'pressActive':'']"
+            @click="selectClick(0)">{{province}}</span>
       <i v-if='showLevel(2)'>/</i>
-      <span :class="['picker-city', chooseIndex  == 1?'pressActive':'']" @click="selectClick(1)" v-if='showLevel(2)'>{{city}}</span>
+      <span :class="['picker-city', chooseIndex  == 1?'pressActive':'']"
+            @click="selectClick(1)"
+            v-if='showLevel(2)'>{{city}}</span>
       <i v-if='showLevel(3)'>/</i>
-      <span :class="['picker-county', chooseIndex == 2?'pressActive':'']" @click="selectClick(2)" v-if='showLevel(3)'>{{county}}</span>
+      <span :class="['picker-county', chooseIndex == 2?'pressActive':'']"
+            @click="selectClick(2)"
+            v-if='showLevel(3)'>{{county}}</span>
       <i v-if='showLevel(4)'>/</i>
-      <span :class="['picker-road', chooseIndex == 3?'pressActive':'']" @click="selectClick(3)" v-if='showLevel(4)'>{{road}}</span>
+      <span :class="['picker-road', chooseIndex == 3?'pressActive':'']"
+            @click="selectClick(3)"
+            v-if='showLevel(4)'>{{road}}</span>
       <em class="picker-arrow"></em>
     </div>
-    <ul class="picker-list" v-if="showList && showDataArray.length > 0">
-      <li v-for="item in showDataArray" :key="item.code" @click="chooseOption(item.code,item.name)">{{item.name}}</li>
+    <ul class="picker-list"
+        v-if="showList && showDataArray.length > 0">
+      <li v-for="item in showDataArray"
+          :key="item.code"
+          @click="chooseOption(item.code,item.name)">{{item.name}}</li>
     </ul>
   </div>
 </template>
 <script>
-import locationData from './pcas-code.json';
+import locationData from "./pcas-code.json";
 export default {
-  name: 'linkarea', // vue component name
-  props:['loCode','level'], //loCode 为地址编码，level位显示的层级
+  name: "linkarea", // vue component name
+  props: ["loCode", "level"], //loCode 为地址编码，level位显示的层级
   methods: {
     /**
      * @description 点击span事件
      * @param index 点击顺序
      */
-    selectClick(index){
+    selectClick(index) {
       let _this = this;
       _this.showList = true;
-      switch (index){
+      switch (index) {
         //选择省
         case 0:
-        _this.showDataArray = locationData;      
-        _this.provinceArray = _this.showDataArray;
-        _this.chooseIndex = index;
-        break;
+          _this.showDataArray = locationData;
+          _this.provinceArray = _this.showDataArray;
+          _this.chooseIndex = index;
+          break;
         //选择市
         case 1:
-        if(_this.locationCode.length > 0) {
-          _this.reloadData(_this.provinceArray,2);
-          _this.cityArray = _this.showDataArray;
-          _this.chooseIndex = index;
-        }
-        break;
+          if (_this.locationCode.length > 0) {
+            _this.reloadData(_this.provinceArray, 2);
+            _this.cityArray = _this.showDataArray;
+            _this.chooseIndex = index;
+          }
+          break;
         //选择区
         case 2:
-        if(_this.locationCode.length > 2) {
-          _this.reloadData(_this.cityArray,4);
-          _this.countyArray = _this.showDataArray;
-          _this.chooseIndex = index;
-        }
-        break;
+          if (_this.locationCode.length > 2) {
+            _this.reloadData(_this.cityArray, 4);
+            _this.countyArray = _this.showDataArray;
+            _this.chooseIndex = index;
+          }
+          break;
         //选择街道
         case 3:
-        if(_this.locationCode.length > 4) {
-          _this.reloadData(_this.countyArray,6);
-          _this.roadArray = _this.showDataArray;
-          _this.chooseIndex = index;
-        }
-        break;
-        default:break;
+          if (_this.locationCode.length > 4) {
+            _this.reloadData(_this.countyArray, 6);
+            _this.roadArray = _this.showDataArray;
+            _this.chooseIndex = index;
+          }
+          break;
+        default:
+          break;
       }
     },
-     /**
+    /**
      * @description 选中下拉选项
      * @param code 选中值
      * @param areaName 选中名称
      */
-    chooseOption(code, areaName){
+    chooseOption(code, areaName) {
       let _this = this;
       _this.locationCode = code;
-      switch (_this.chooseIndex){
+      switch (_this.chooseIndex) {
         //选择省
         case 0:
-        _this.province = areaName;
-        _this.cityArray = [];
-        _this.countyArray = [];
-        _this.roadArray = [];
-        _this.city = '请选择市';
-        _this.county = '请选择区';
-        _this.road = '请选择街道';
-        break;
+          _this.province = areaName;
+          _this.cityArray = [];
+          _this.countyArray = [];
+          _this.roadArray = [];
+          _this.city = "请选择市";
+          _this.county = "请选择区";
+          _this.road = "请选择街道";
+          break;
         //选择市
         case 1:
-        _this.city = areaName;
-        _this.countyArray = [];
-        _this.roadArray = [];
-        _this.county = '请选择区';
-        _this.road = '请选择街道';
-        break;
+          _this.city = areaName;
+          _this.countyArray = [];
+          _this.roadArray = [];
+          _this.county = "请选择区";
+          _this.road = "请选择街道";
+          break;
         //选择区
         case 2:
-        _this.county = areaName;
-        _this.roadArray = [];
-        _this.road = '请选择街道';
-        break;
+          _this.county = areaName;
+          _this.roadArray = [];
+          _this.road = "请选择街道";
+          break;
         //选择街道
         case 3:
-        _this.road = areaName;
-        _this.chooseIndex = -1;
-        _this.showList = false;
-        break;
-        default:break;
+          _this.road = areaName;
+          _this.chooseIndex = -1;
+          _this.showList = false;
+          break;
+        default:
+          break;
       }
       //模拟下一个点击事件
-      if(_this.chooseIndex > -1 && _this.chooseIndex < 3){
+      if (_this.chooseIndex > -1 && _this.chooseIndex < 3) {
         _this.selectClick(_this.chooseIndex + 1);
       }
     },
-     /**
+    /**
      * @description 更新下拉列表数据
      * @param arrayData 数据源
      * @param len 截取长度
      */
-    reloadData(arrayData,len){
-      let _this = this, tempArray = [];
-      tempArray = arrayData.find((item) => {
-        return item.code == _this.locationCode.substr(0,len);
+    reloadData(arrayData, len) {
+      let _this = this,
+        tempArray = [];
+      tempArray = arrayData.find(item => {
+        return item.code == _this.locationCode.substr(0, len);
       });
       _this.showDataArray = tempArray.children;
     },
@@ -125,59 +140,60 @@ export default {
      * @param locationCode 地区编码
      */
     findLocation(locationCode) {
-      let _this = this,tempIndex = 0;
+      let _this = this,
+        tempIndex = 0;
       _this.provinceArray = locationData;
       if (locationCode.length > 1) {
-        tempIndex = locationData.findIndex((item) => {
-          return item.code == locationCode.substr(0,2);
+        tempIndex = locationData.findIndex(item => {
+          return item.code == locationCode.substr(0, 2);
         });
-        if(tempIndex > -1) {
+        if (tempIndex > -1) {
           _this.province = _this.provinceArray[tempIndex].name;
           _this.cityArray = _this.provinceArray[tempIndex].children;
-        }else{
-          _this.province = '请选择省';
+        } else {
+          _this.province = "请选择省";
           _this.cityArray = [];
         }
       }
       if (locationCode.length > 3) {
-        tempIndex = _this.cityArray.findIndex((item) => {
-          return item.code == locationCode.substr(0,4);
+        tempIndex = _this.cityArray.findIndex(item => {
+          return item.code == locationCode.substr(0, 4);
         });
-        if(tempIndex > -1) {
+        if (tempIndex > -1) {
           _this.city = _this.cityArray[tempIndex].name;
           _this.countyArray = _this.cityArray[tempIndex].children;
-        }else{
-          _this.city = '请选择市';
+        } else {
+          _this.city = "请选择市";
           _this.countyArray = [];
         }
       }
       if (locationCode.length > 5) {
-        tempIndex = _this.countyArray.findIndex((item) => {
-          return item.code == locationCode.substr(0,6);
+        tempIndex = _this.countyArray.findIndex(item => {
+          return item.code == locationCode.substr(0, 6);
         });
-        if(tempIndex > -1) {
+        if (tempIndex > -1) {
           _this.county = _this.countyArray[tempIndex].name;
           _this.roadArray = _this.countyArray[tempIndex].children;
-        }else{
-          _this.county = '请选择区';
+        } else {
+          _this.county = "请选择区";
           _this.roadArray = [];
         }
       }
       if (locationCode.length > 8) {
-        tempIndex = _this.roadArray.findIndex((item) => {
+        tempIndex = _this.roadArray.findIndex(item => {
           return item.code == locationCode;
         });
-        if(tempIndex > -1) {
+        if (tempIndex > -1) {
           _this.road = _this.roadArray[tempIndex].name;
-        }else{
-          _this.road = '请选择街道';
+        } else {
+          _this.road = "请选择街道";
         }
       }
     },
     /**
      * @description 失焦后隐藏下拉列表
      */
-    hideList(){
+    hideList() {
       this.showList = false;
       this.chooseIndex = -1;
     },
@@ -186,58 +202,60 @@ export default {
      * @param level 级别
      * @returns boolean
      */
-    showLevel(level){
-      if(!this.level || this.level < 1 || this.level >= level){
+    showLevel(level) {
+      if (!this.level || this.level < 1 || this.level >= level) {
         return true;
-      }else{
+      } else {
         return false;
       }
     }
   },
-  watch:{
+  watch: {
     /* 将选中的地区值传递给父组件 */
     locationCode(val) {
-      let _this = this, locationStr = '', returnObj = {};
+      let _this = this,
+        locationStr = "",
+        returnObj = {};
       if (val.length > 1) {
         locationStr += _this.province;
-      } 
+      }
       if (val.length > 3) {
-        locationStr += _this.city ;
-      } 
+        locationStr += _this.city;
+      }
       if (val.length > 5) {
-        locationStr += _this.county ;
-      } 
+        locationStr += _this.county;
+      }
       if (val.length > 8) {
         locationStr += _this.road;
       }
       returnObj = { name: locationStr, value: val };
-      this.$emit('location',returnObj);
+      this.$emit("location", returnObj);
     },
     /* 根据传进来的值定位地区 */
-    loCode(val){
-      if (val != undefined && val != null && val != '') {
-        if(typeof val == "number"){
+    loCode(val) {
+      if (val != undefined && val != null && val != "") {
+        if (typeof val == "number") {
           this.locationCode = val.toString();
-        }else{
+        } else {
           this.locationCode = val;
         }
-        this.findLocation( this.locationCode); 
+        this.findLocation(this.locationCode);
       }
     }
   },
   data() {
     return {
-      chooseIndex: -1,//对应省市县
+      chooseIndex: -1, //对应省市县
       showDataArray: [],
       provinceArray: [],
       cityArray: [],
       countyArray: [],
       roadArray: [],
-      province: '请选择省',
-      city: '请选择市',
-      county: '请选择区',
-      road: '请选择街道',
-      locationCode: '',
+      province: "请选择省",
+      city: "请选择市",
+      county: "请选择区",
+      road: "请选择街道",
+      locationCode: "",
       showList: false
     };
   }
@@ -246,97 +264,98 @@ export default {
 
 <style scoped>
 .picker-area {
-  position:relative;
-  font-size:14px;
-  background:#fff;
-  cursor:default;
+  position: relative;
+  font-size: 14px;
+  background: #fff;
+  cursor: default;
   width: 400px;
-  border-color: #51AFC9;
+  border-color: #51afc9;
   outline: none;
+  text-align: left;
 }
 
 .picker-show {
-  position:relative;
-  padding:0 8px;
-  height:36px;
-  line-height:36px;
-  border:1px solid #dedede;
-  border-radius:3px;
+  position: relative;
+  padding: 0 8px;
+  height: 36px;
+  line-height: 36px;
+  border: 1px solid #dedede;
+  border-radius: 3px;
 }
 
 .picker-show span {
-  float:left;
-  display:inline-block;
-  max-width:80px;
-  height:24px;
-  line-height:24px;
-  padding:0 3px;
-  margin-top:6px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  color:#333;
-  cursor:pointer;
+  float: left;
+  display: inline-block;
+  max-width: 80px;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 3px;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+  cursor: pointer;
 }
 
 .picker-show span:hover {
-  color:#fff;
-  border-radius:3px;
-  max-width: 80px; 
-  background:#51AFC9;
+  color: #fff;
+  border-radius: 3px;
+  max-width: 80px;
+  background: #51afc9;
 }
 
 .picker-show span.pressActive {
-  background:#51AFC9;
-  color:#fff;
-  border-radius:3px
+  background: #51afc9;
+  color: #fff;
+  border-radius: 3px;
 }
 
 .picker-arrow {
-  position:absolute;
-  top:14px;
-  right:8px;
-  display:block;
-  border:6px solid #999;
-  border-left:6px solid transparent;
-  border-right:6px solid transparent;
-  border-bottom:6px solid transparent;
+  position: absolute;
+  top: 14px;
+  right: 8px;
+  display: block;
+  border: 6px solid #999;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid transparent;
 }
 
 .picker-show i {
-  float:left;
-  display:inline-block;
-  padding:0 3px;
-  color:#333;
-  font-style:normal;
+  float: left;
+  display: inline-block;
+  padding: 0 3px;
+  color: #333;
+  font-style: normal;
 }
 
 .picker-list {
-  position:absolute;
-  line-height:36px;
-  margin:0;
-  padding:0;
-  background:#fff;
-  z-index:99999;
-  overflow-y:auto;
-  overflow-x:hidden;
-  border:1px solid #dedede;
-  border-top:none;
+  position: absolute;
+  line-height: 36px;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  z-index: 99999;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #dedede;
+  border-top: none;
   max-height: 240px;
   width: 398px;
 }
 
 .picker-list li {
-  margin:0;
-  padding-left:11px;
-  list-style:none;
-  color:#888;
+  margin: 0;
+  padding-left: 11px;
+  list-style: none;
+  color: #888;
 }
 
 .picker-list li:hover {
-  color:#fff;
-  font-weight:bold;
-  background:#51AFC9;
+  color: #fff;
+  font-weight: bold;
+  background: #51afc9;
 }
 
 /* 滚动条美化样式 */
