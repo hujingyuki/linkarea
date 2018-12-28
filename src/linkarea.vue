@@ -32,6 +32,11 @@ import locationData from "./pcas-code.json";
 export default {
   name: "linkarea", // vue component name
   props: ["loCode", "level"], //loCode 为地址编码，level位显示的层级
+  mounted:function() {
+    if(!this.level || this.level < 1 || this.level > 4 ){
+      this.level = 4;
+    }
+  },
   methods: {
     /**
      * @description 点击span事件
@@ -110,15 +115,16 @@ export default {
           break;
         //选择街道
         case 3:
-          _this.road = areaName;
-          _this.chooseIndex = -1;
-          _this.showList = false;
-          break;
-        default:
-          break;
+        _this.road = areaName;
+        break;
+        default:break;
+      }
+      if(_this.chooseIndex == (this.level - 1)){
+        _this.chooseIndex = -1;
+        _this.showList = false;
       }
       //模拟下一个点击事件
-      if (_this.chooseIndex > -1 && _this.chooseIndex < 3) {
+      if(_this.chooseIndex > -1){
         _this.selectClick(_this.chooseIndex + 1);
       }
     },
