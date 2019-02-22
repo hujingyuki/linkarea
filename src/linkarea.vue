@@ -1,5 +1,5 @@
 <template>
-  <div class="picker-area" @blur="hideList" tabindex="0">
+  <div class="picker-area" @blur="hideList" tabindex="1" id="picker">
     <div class="picker-show">
       <span :class="['picker-province', chooseIndex == 0?'pressActive':'']" 
             :style="{'max-width': maxLen}"
@@ -20,9 +20,9 @@
             @click="selectClick(3)" v-if='showLevel(4)' 
             :title="road"
             :style="{'max-width': maxLen}">{{road}}</span>
-      <em class="picker-arrow"></em>
+      <em :class="['picker-arrow',showList ?'rorate': '']" @click="showSelect"></em>
     </div>
-    <ul class="picker-list" v-if="showList && showDataArray.length > 0">
+    <ul class="picker-list" ref="picker-list" v-if="showList && showDataArray.length > 0">
       <li v-for="item in showDataArray" :key="item.code" @click="chooseOption(item.code,item.name)">{{item.name}}</li>
     </ul>
   </div>
@@ -44,7 +44,13 @@ export default {
     }
   },
   mounted:function() {
-    
+    //动态计算span最大宽度
+    let obj = document.getElementById('picker');
+    if (obj) {
+      let width = obj.offsetWidth;
+      width = width > 0 ? ( width - 80 ) / this.LEVEL : 80;
+      this.maxLen = width + 'px';
+    } 
   },
   methods: {
     /**
@@ -53,20 +59,20 @@ export default {
      */
     selectClick(index){
       let _this = this;
-      _this.showList = true;
+      
       switch (index){
         //选择省
         case 0:
         _this.showDataArray = locationData;      
         _this.provinceArray = _this.showDataArray;
-        _this.chooseIndex = index;
+        this.selectHandler(index);
         break;
         //选择市
         case 1:
         if(_this.locationCode.length > 0) {
           _this.reloadData(_this.provinceArray,2);
           _this.cityArray = _this.showDataArray;
-          _this.chooseIndex = index;
+          this.selectHandler(index);
         }
         break;
         //选择区
@@ -74,7 +80,7 @@ export default {
         if(_this.locationCode.length > 2) {
           _this.reloadData(_this.cityArray,4);
           _this.countyArray = _this.showDataArray;
-          _this.chooseIndex = index;
+          this.selectHandler(index);
         }
         break;
         //选择街道
@@ -82,10 +88,23 @@ export default {
         if(_this.locationCode.length > 4) {
           _this.reloadData(_this.countyArray,6);
           _this.roadArray = _this.showDataArray;
-          _this.chooseIndex = index;
+          this.selectHandler(index);
         }
         break;
         default:break;
+      }
+    },
+    /**
+     * @description 处理展开操作
+     * @param index 点击的顺序
+     */
+    selectHandler(index) {
+      this.chooseIndex = index;
+      this.showList = true;
+      //增加滚动条置顶
+      let pk = this.$refs['picker-list'];
+      if (pk) {
+        pk.scrollTop = 0;
       }
     },
      /**
@@ -216,6 +235,16 @@ export default {
      */
     showLevel(level){
       return this.LEVEL >= level;
+    },
+    /**
+     * @description 点击箭头事件
+     */
+    showSelect(){
+      if(this.showList){
+        this.showList = false;
+      }else {
+        this.selectClick(0);
+      }
     }
   },
   watch:{
@@ -250,17 +279,6 @@ export default {
     }
   },
   computed: {
-    //动态计算span最大宽度
-    maxLen() {
-      let obj = document.getElementsByClassName('picker-area')[0];
-      if (obj) {
-        let width = obj.offsetWidth;
-        width = width > 0 ? ( width - 80 ) / this.LEVEL : 80;
-        return width + 'px';
-      } else {
-        return '80px';
-      }
-    },
     //过滤level值
     LEVEL() {
       if( this.level < 1 || this.level > 4 ){
@@ -283,7 +301,8 @@ export default {
       county: '请选择区',
       road: '请选择街道',
       locationCode: '',
-      showList: false
+      showList: false,
+      maxLen: '80px'
     };
   }
 };
@@ -345,6 +364,7 @@ export default {
   border-left:6px solid transparent;
   border-right:6px solid transparent;
   border-bottom:6px solid transparent;
+  cursor: pointer;
 }
 
 .picker-show i {
@@ -361,7 +381,7 @@ export default {
   margin:0;
   padding:0;
   background:#fff;
-  z-index:99999;
+  z-index:100;
   overflow-y:auto;
   overflow-x:hidden;
   border:1px solid #dedede;
@@ -396,5 +416,16 @@ export default {
 .picker-list::-webkit-scrollbar-thumb {
   background: #6fb7cc;
   border-radius: 10px;
+}
+
+
+.rorate {
+  top:8px;
+  right:8px;
+  border:6px solid #999;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:6px solid transparent;
+  cursor: pointer;
 }
 </style>

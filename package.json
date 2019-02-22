@@ -1,6 +1,6 @@
 {
   "name": "linkarea",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "区域四级联动选择下拉框",
   "main": "dist/linkarea.umd.js",
   "module": "dist/linkarea.esm.js",
